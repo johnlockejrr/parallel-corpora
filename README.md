@@ -49,7 +49,7 @@ Open:
 If port `5000` is already in use (e.g. by any other app/process), run on a different port:
 
 ```bash
-PORT=5001 ./.venv/bin/python app.py
+PORT=5001 python app.py
 ```
 
 ## Import a CSV/TSV (preprocess)
