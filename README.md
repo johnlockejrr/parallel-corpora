@@ -21,6 +21,10 @@ A small **UTF‑8-safe** Flask + SQLite dashboard that works like a lightweight 
 - `scripts/import_dataset.py`: import a UTF‑8 CSV/TSV into a new corpus
 - `create-corpus.py`: upload CSV/TSV to server API (create + import)
 
+## How it looks
+
+<img width="1344" height="1221" alt="image" src="https://github.com/user-attachments/assets/41d6b9b7-bc2a-41b8-bd59-8947c5735eac" />
+
 ## Setup
 
 Create a virtual env
