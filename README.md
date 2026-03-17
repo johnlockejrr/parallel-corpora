@@ -52,6 +52,17 @@ If port `5000` is already in use (e.g. by any other app/process), run on a diffe
 PORT=5001 python app.py
 ```
 
+## Production (no dev server warning)
+
+Run behind a production WSGI server (Gunicorn):
+
+```bash
+gunicorn -w 2 -b 0.0.0.0:5001 "app:create_app()"
+```
+
+- `-w 2`: worker processes (tune for your machine)
+- `-b 0.0.0.0:5001`: bind host/port
+
 ## Import a CSV/TSV (preprocess)
 
 Your file should have a header row. Recommended header fields:
