@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Dashboard — Parallel Corpora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="header-inner">
+        <div class="logo-block">
+          <span class="logo-icon">📚</span>
+          <div>
+            <h1>Web Dashboard</h1>
+            <p class="subtitle">Parallel Corpora Editor <span class="version-badge">UTF‑8</span></p>
+          </div>
+        </div>
+        <div class="header-stats">
+          <div class="stat-chip">
+            <span class="stat-label">Corpus</span>
+            <span class="stat-value" id="activeCorpusName">—</span>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-label">Rows</span>
+            <span class="stat-value" id="rowCount">—</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <h2>Corpora</h2>
+          <button id="newCorpusBtn" class="btn btn-primary">+ New</button>
+        </div>
+        <div id="corporaList" class="corpora-list"></div>
+      </aside>
+
+      <main class="main">
+        <div class="toolbar">
+          <div class="search-bar">
+            <span class="search-icon">⌕</span>
+            <input type="text" id="searchInput" placeholder="Search by key or content…" />
+          </div>
+          <div class="view-controls">
+            <select id="sortBySelect" class="btn" title="Sort by">
+              <option value="id" selected>ID</option>
+              <option value="key">Key</option>
+              <option value="updated_at">Updated</option>
+              <option value="created_at">Created</option>
+            </select>
+            <button id="sortDirBtn" class="btn" title="Sort direction" aria-label="Sort direction">↑ Asc</button>
+            <select id="pageSizeSelect" class="btn" title="Page size">
+              <option value="100">100</option>
+              <option value="500" selected>500</option>
+              <option value="1000">1000</option>
+            </select>
+            <button id="prevPageBtn" class="btn" title="Previous page" disabled>‹ Prev</button>
+            <button id="nextPageBtn" class="btn" title="Next page" disabled>Next ›</button>
+            <span id="pageInfo" class="page-info">—</span>
+            <button id="exportBtn" class="btn" title="Export corpus as CSV">Export</button>
+            <button id="newRowBtn" class="btn btn-primary" disabled>+ New Row</button>
+          </div>
+        </div>
+
+        <div id="tableWrap" class="table-wrap">
+          <div id="emptyState" class="loading">Select (or create) a corpus to begin.</div>
+          <table id="gridTable" class="grid" style="display:none;">
+            <thead id="gridHead"></thead>
+            <tbody id="gridBody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- New Corpus Modal -->
+  <div id="newCorpusModal" class="modal">
+    <div class="modal-content">
+      <span class="close" data-close="modal">&times;</span>
+      <h2>Create Corpus</h2>
+      <label class="field-label">Name</label>
+      <input type="text" id="newCorpusName" class="edit-title" placeholder="e.g. Syriac ↔ German" />
+      <label class="field-label">Create from</label>
+      <div class="segmented">
+        <button id="createModeManualBtn" class="btn btn-view active" type="button">Manual</button>
+        <button id="createModeImportBtn" class="btn btn-view" type="button">Import CSV/TSV</button>
+      </div>
+
+      <div id="manualCreateBlock">
+        <label class="field-label">Columns <span class="field-hint">(comma separated keys, e.g. syc,de,ar)</span></label>
+        <input type="text" id="newCorpusColumns" class="edit-title" placeholder="syc,de" />
+      </div>
+
+      <div id="importCreateBlock" style="display:none;">
+        <label class="field-label">File <span class="field-hint">(UTF-8; delimiter auto-detected)</span></label>
+        <input type="file" id="importFile" class="edit-title" accept=".csv,.tsv,.txt" />
+
+        <div id="importPreview" class="import-preview" style="display:none;">
+          <div class="import-preview-row">
+            <div class="import-chip">Delimiter: <span id="importDelimiter">—</span></div>
+            <div class="import-chip">Rows: <span id="importRowCount">—</span></div>
+          </div>
+
+          <label class="field-label">Key field <span class="field-hint">(optional)</span></label>
+          <select id="importKeyField" class="btn" title="Key field"></select>
+
+          <label class="field-label">Columns to import</label>
+          <div id="importColumnsList" class="import-columns"></div>
+        </div>
+      </div>
+
+      <label class="field-label">Description</label>
+      <textarea id="newCorpusDesc" class="edit-content" placeholder="Optional…"></textarea>
+      <div class="modal-actions">
+        <button id="createCorpusBtn" class="btn btn-primary">Create</button>
+        <button id="importCorpusBtn" class="btn btn-primary" style="display:none;">Create & Import</button>
+        <button class="btn btn-secondary" data-close="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Row Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content modal-content--narrow">
+      <h2>⚠️ Confirm Deletion</h2>
+      <p class="delete-warning">This action cannot be undone.</p>
+      <p class="delete-target"><strong id="deleteTarget"></strong></p>
+      <div class="modal-actions">
+        <button id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+        <button class="btn btn-secondary" data-close="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Corpus Modal -->
+  <div id="deleteCorpusModal" class="modal">
+    <div class="modal-content modal-content--narrow">
+      <h2>⚠️ Confirm Corpus Deletion</h2>
+      <p class="delete-warning">This will delete the corpus and its table. This action cannot be undone.</p>
+      <p class="delete-target"><strong id="deleteCorpusTarget"></strong></p>
+      <div class="modal-actions">
+        <button id="confirmDeleteCorpusBtn" class="btn btn-danger">Delete Corpus</button>
+        <button class="btn btn-secondary" data-close="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+
+</html>
+
