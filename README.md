@@ -21,27 +21,32 @@ A small **UTF‑8-safe** Flask + SQLite dashboard that works like a lightweight 
 - `scripts/import_dataset.py`: import a UTF‑8 CSV/TSV into a new corpus
 - `create-corpus.py`: upload CSV/TSV to server API (create + import)
 
-## Setup (your existing `uv` venv)
+## Setup
 
-You already have a virtualenv at `./.venv`.
+Create a virtual env
+
+```bash
+uv venv -p 3.12 --seed
+source .venv/bin/activate
+```
 
 Install dependencies:
 
 ```bash
-./.venv/bin/python -m pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 Run the server:
 
 ```bash
-./.venv/bin/python app.py
+python app.py
 ```
 
 Open:
 
 - `http://localhost:5000`
 
-If port `5000` is already in use (e.g. by your existing ContextKeep UI), run on a different port:
+If port `5000` is already in use (e.g. by any other app/process), run on a different port:
 
 ```bash
 PORT=5001 ./.venv/bin/python app.py
@@ -58,16 +63,16 @@ Examples:
 
 ```bash
 # Auto-detect delimiter (, \\t, ;, |)
-./.venv/bin/python scripts/import_dataset.py data/my_parallel.tsv
+python scripts/import_dataset.py data/my_parallel.tsv
 
 # Force TSV
-./.venv/bin/python scripts/import_dataset.py data/my_parallel.tsv --delimiter \\t
+python scripts/import_dataset.py data/my_parallel.tsv --delimiter \\t
 
 # Choose which columns to import
-./.venv/bin/python scripts/import_dataset.py data/my_parallel.csv --columns syc,de
+python scripts/import_dataset.py data/my_parallel.csv --columns syc,de
 
 # Custom key field
-./.venv/bin/python scripts/import_dataset.py data/my_parallel.csv --key-field id
+python scripts/import_dataset.py data/my_parallel.csv --key-field id
 ```
 
 The importer creates a **new corpus** each time.
@@ -100,7 +105,7 @@ Notes:
 ## Create/import via CLI (calls the server API)
 
 ```bash
-./.venv/bin/python create-corpus.py --url http://127.0.0.1:5001 --file data/my_parallel.tsv --delimiter "\\t" --name "Syriac-German" --key-field key --columns syc,de
+python create-corpus.py --url http://127.0.0.1:5001 --file data/my_parallel.tsv --delimiter "\\t" --name "Syriac-German" --key-field key --columns syc,de
 ```
 
 ## Export/backup a corpus
