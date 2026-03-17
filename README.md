@@ -121,7 +121,7 @@ Query params:
 ## Notes
 
 - SQLite stores text as Unicode; this app also returns JSON with `ensure_ascii = False` so non‑Latin scripts remain readable in API responses.
-- **`id` vs `key`**: `id` is the internal identity; `key` is optional and only needed if you want stable external references + upserts on re-import.
+- **`id`** vs **`key`**: `id` is the internal identity; `key` is optional and only needed if you want stable external references + upserts on re-import.
 - Current search uses a simple `LIKE` over key/raw JSON cells. For large corpora, we can add SQLite FTS5 later.
 
 ---
